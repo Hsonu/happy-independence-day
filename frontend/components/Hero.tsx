@@ -91,16 +91,45 @@ function Particles() {
 export default function Hero() {
   const { user } = useAuth();
   const { showToast } = useToast();
+  const [inviteName, setInviteName] = useState('');
+  const [referrerName, setReferrerName] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const invitedBy = params.get('invitedBy');
+      if (invitedBy) {
+        setReferrerName(invitedBy);
+      }
+    }
+  }, []);
 
   const handleShare = () => {
-    const url = 'https://happy-independence-day-fohd.onrender.com/';
-    navigator.clipboard.writeText(url)
+    const baseUrl = 'https://happy-independence-day-fohd.onrender.com/';
+    const shareUrl = inviteName.trim()
+      ? `${baseUrl}?invitedBy=${encodeURIComponent(inviteName.trim())}`
+      : baseUrl;
+
+    navigator.clipboard.writeText(shareUrl)
       .then(() => {
         showToast('🇮🇳 Link copied! Share the pride with your friends.', 'success');
       })
       .catch(() => {
         showToast('Failed to copy link. Please share the URL manually!', 'error');
       });
+  };
+
+  const getWhatsAppLink = () => {
+    const baseUrl = 'https://happy-independence-day-fohd.onrender.com/';
+    const shareUrl = inviteName.trim()
+      ? `${baseUrl}?invitedBy=${encodeURIComponent(inviteName.trim())}`
+      : baseUrl;
+      
+    const message = inviteName.trim()
+      ? `*${inviteName.trim()}* has invited you to connect on Tiranga Connect for the 80th Independence Day! 🇮🇳 Join here: ${shareUrl}`
+      : `Join the India referral network built for the 80th Independence Day! 🇮🇳 Let's connect and grow together! Join here: ${baseUrl}`;
+      
+    return `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
   };
 
   return (
@@ -130,6 +159,19 @@ export default function Hero() {
 
       {/* Content */}
       <div className="relative z-10 text-center px-4 sm:px-6 max-w-4xl mx-auto">
+        {/* Referrer Welcome Banner */}
+        {referrerName && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6 p-4 rounded-xl bg-saffron/10 border border-saffron/20 max-w-md mx-auto"
+          >
+            <p className="text-sm font-semibold text-saffron">
+              🇮🇳 You are invited by <span className="underline font-bold">{referrerName}</span> to join the celebration!
+            </p>
+          </motion.div>
+        )}
+
         {/* Badge */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -217,6 +259,20 @@ export default function Hero() {
               <p className="text-white/95 font-medium text-lg flex items-center justify-center gap-2 bg-white/5 backdrop-blur-md px-6 py-2.5 rounded-full border border-white/10 shadow-inner">
                 🧡 Share with your friends & family to grow the Network! 💚
               </p>
+
+              {/* Name Input */}
+              <div className="w-full max-w-sm">
+                <label className="block text-xs font-semibold text-white/50 uppercase tracking-wider mb-2 text-center">
+                  Enter your name to personalize the invite:
+                </label>
+                <input
+                  type="text"
+                  value={inviteName}
+                  onChange={(e) => setInviteName(e.target.value)}
+                  placeholder="Your Name (e.g. Sonu Raj)"
+                  className="w-full px-5 py-3 rounded-xl border border-white/10 bg-white/5 text-white placeholder-white/30 text-center font-medium text-md focus:outline-none focus:ring-2 focus:ring-saffron/50 focus:border-saffron transition-all shadow-inner"
+                />
+              </div>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center w-full">
                 <motion.button
@@ -229,7 +285,7 @@ export default function Hero() {
                 </motion.button>
 
                 <a
-                  href={`https://api.whatsapp.com/send?text=Join%20the%20India%20referral%20network%20built%20for%20the%2080th%20Independence%20Day%20🇮🇳%20Let's%20connect%20and%20grow%20together!%20Join%20here:%20https://happy-independence-day-fohd.onrender.com/`}
+                  href={getWhatsAppLink()}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full sm:w-auto"
