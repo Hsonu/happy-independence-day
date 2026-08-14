@@ -105,7 +105,7 @@ export default function Hero() {
   }, []);
 
   const handleShare = () => {
-    const baseUrl = 'https://happy-independence-day-fohd.onrender.com/';
+    const baseUrl = 'https://happy-independence-day-2.onrender.com/';
     const shareUrl = inviteName.trim()
       ? `${baseUrl}?invitedBy=${encodeURIComponent(inviteName.trim())}`
       : baseUrl;
@@ -120,7 +120,7 @@ export default function Hero() {
   };
 
   const getWhatsAppLink = () => {
-    const baseUrl = 'https://happy-independence-day-fohd.onrender.com/';
+    const baseUrl = 'https://happy-independence-day-2.onrender.com/';
     const shareUrl = inviteName.trim()
       ? `${baseUrl}?invitedBy=${encodeURIComponent(inviteName.trim())}`
       : baseUrl;
